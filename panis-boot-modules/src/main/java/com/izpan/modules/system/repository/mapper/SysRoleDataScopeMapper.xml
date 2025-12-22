@@ -65,9 +65,41 @@
                 INNER JOIN sys_data_scope sds ON srds.data_scope_id = sds.id
         WHERE
             sds.is_deleted = 0
-            AND sds.status = 1
-            AND srds.is_deleted = 0
-            AND sds.permission_resource = #{permissionResource}
+          AND sds.status = 1
+          AND srds.is_deleted = 0
+          AND sds.permission_resource = #{permissionResource}
     </select>
+
+    <select id="listSoftDeletedByRoleId" resultType="com.izpan.modules.system.domain.entity.SysRoleDataScope">
+        SELECT
+        srds.id,
+        srds.role_id,
+        srds.data_scope_id
+        FROM
+        sys_role_data_scope srds
+        WHERE
+        srds.role_id = #{roleId}
+        AND srds.data_scope_id IN
+        <foreach collection="dataScopeIds" item="dataScopeId" separator="," open="(" close=")">
+            #{dataScopeId}
+        </foreach>
+        AND srds.is_deleted = 1
+    </select>
+
+    <update id="recoverByRoleAndDataScope">
+        UPDATE 
+            sys_role_data_scope srds
+        SET 
+            srds.is_deleted = 0,
+            srds.update_user = #{updateUser},
+            srds.update_user_id = #{updateUserId},
+            srds.update_time = #{updateTime}
+        WHERE srds.is_deleted = 1 
+          AND srds.role_id = #{roleId}
+          AND srds.data_scope_id IN
+        <foreach collection="dataScopeIds" item="dataScopeId" separator="," open="(" close=")">
+            #{dataScopeId}
+        </foreach>
+    </update>
 
 </mapper>

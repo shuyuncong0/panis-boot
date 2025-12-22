@@ -25,6 +25,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.extension.toolkit.Db;
 import com.google.common.collect.Sets;
 import com.izpan.common.util.CollectionUtil;
+import com.izpan.infrastructure.holder.GlobalUserHolder;
 import com.izpan.infrastructure.page.PageQuery;
 import com.izpan.modules.system.domain.bo.SysRoleDataScopeBO;
 import com.izpan.modules.system.domain.bo.SysRoleDataScopeQueryBO;
@@ -38,6 +39,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -73,12 +75,12 @@ public class SysRoleDataScopeServiceImpl extends ServiceImpl<SysRoleDataScopeMap
 
     @Override
     public List<Long> listDataScopeIdsByRoleId(Long roleId) {
-        // 根据角色ID查询已配置且启用的数据权限
+        // 根据角色 ID 查询已配置且启用的数据权限
         LambdaQueryWrapper<SysRoleDataScope> wrapper = new LambdaQueryWrapper<SysRoleDataScope>()
                 .eq(SysRoleDataScope::getRoleId, roleId)
                 .select(SysRoleDataScope::getDataScopeId);
 
-        // 提取数据权限ID列表
+        // 提取数据权限 ID 列表
         return baseMapper.selectList(wrapper).stream()
                 .map(SysRoleDataScope::getDataScopeId)
                 .toList();
@@ -91,7 +93,7 @@ public class SysRoleDataScopeServiceImpl extends ServiceImpl<SysRoleDataScopeMap
                 .eq(SysRoleDataScope::getRoleId, roleId);
         List<SysRoleDataScope> originSysRoleDataScopes = baseMapper.selectList(queryWrapper);
 
-        // 提取原有的数据权限ID集合
+        // 提取原有的数据权限 ID 集合
         Set<Long> originDataScopeIdSet = originSysRoleDataScopes.stream()
                 .map(SysRoleDataScope::getDataScopeId)
                 .collect(Collectors.toSet());
@@ -122,13 +124,28 @@ public class SysRoleDataScopeServiceImpl extends ServiceImpl<SysRoleDataScopeMap
 
                     // 如有新增，则进行新增数据
                     if (!CollectionUtils.isEmpty(addDataScopeIdSet)) {
-                        // 构建新增的角色数据权限关联列表
-                        List<SysRoleDataScope> addRoleDataScopeList = addDataScopeIdSet.stream()
-                                .map(dataScopeId -> new SysRoleDataScope(roleId, dataScopeId))
-                                .toList();
+                        // 查询已软删除的数据权限关联(因为表设计唯一关系避免重复新增，所以针对已删除的数据进行恢复)
+                        List<SysRoleDataScope> softDeletedRoleDataScopeList = baseMapper.listSoftDeletedByRoleId(roleId, addDataScopeIdSet);
+                        Set<Long> softDeletedDataScopeIdSet = softDeletedRoleDataScopeList.stream()
+                                .map(SysRoleDataScope::getDataScopeId)
+                                .collect(Collectors.toSet());
+                        if (!CollectionUtils.isEmpty(softDeletedDataScopeIdSet)) {
+                            // 直接使用 roleId + softDeletedDataScopeIdSet 批量恢复软删除的数据权限关联
+                            int recover = baseMapper.recoverByRoleAndDataScope(roleId, softDeletedDataScopeIdSet,
+                                    GlobalUserHolder.getUserRealName(), GlobalUserHolder.getUserId(), LocalDateTime.now());
+                            saveBatch.set(recover > 0);
+                            addDataScopeIdSet.removeAll(softDeletedDataScopeIdSet);
+                        }
 
-                        // 批量保存新增数据
-                        saveBatch.set(Db.saveBatch(addRoleDataScopeList));
+                        if (!CollectionUtils.isEmpty(addDataScopeIdSet)) {
+                            // 构建新增的角色数据权限关联列表
+                            List<SysRoleDataScope> addRoleDataScopeList = addDataScopeIdSet.stream()
+                                    .map(dataScopeId -> new SysRoleDataScope(roleId, dataScopeId))
+                                    .toList();
+
+                            // 批量保存新增数据
+                            saveBatch.set(Db.saveBatch(addRoleDataScopeList));
+                        }
                     }
                 }
         );

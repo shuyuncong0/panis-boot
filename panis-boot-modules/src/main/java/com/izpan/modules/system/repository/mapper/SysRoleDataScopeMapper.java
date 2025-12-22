@@ -23,7 +23,9 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.izpan.modules.system.domain.bo.SysRoleDataScopeQueryBO;
 import com.izpan.modules.system.domain.entity.SysRoleDataScope;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 角色数据权限关联管理 Mapper 接口层
@@ -45,4 +47,30 @@ public interface SysRoleDataScopeMapper extends BaseMapper<SysRoleDataScope> {
      * @CreateTime 2025-05-12 - 20:37:51
      */
     List<SysRoleDataScopeQueryBO> listByPermissionCode(String permissionCode);
+
+    /**
+     * 根据角色 ID 及数据权限 ID 集合查询已软删除的数据权限关联
+     *
+     * @param roleId       角色 ID
+     * @param dataScopeIds 数据权限 ID 集合
+     * @return {@link List }<{@link SysRoleDataScope }> 数据权限关联列表
+     * @author payne.zhuang
+     * @CreateTime 2025-12-22 - 21:05:08
+     */
+    List<SysRoleDataScope> listSoftDeletedByRoleId(Long roleId, Set<Long> dataScopeIds);
+
+    /**
+     * 根据角色 ID 和数据权限 ID 集合恢复软删除的数据权限关联
+     *
+     * @param roleId       角色 ID
+     * @param dataScopeIds 数据权限 ID 集合
+     * @param updateUser   更新人
+     * @param updateUserId 更新人 ID
+     * @param updateTime   更新时间
+     * @return {@link int} 恢复结果
+     * @author payne.zhuang
+     * @CreateTime 2025-12-22 - 21:51:08
+     */
+    int recoverByRoleAndDataScope(Long roleId, Set<Long> dataScopeIds,
+                                  String updateUser, Long updateUserId, LocalDateTime updateTime);
 }
