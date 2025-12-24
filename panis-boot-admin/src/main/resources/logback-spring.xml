@@ -7,6 +7,10 @@
     <!-- appender是configuration的子节点，是负责写日志的组件。 -->
     <!-- ConsoleAppender：把日志输出到控制台 -->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- ThresholdFilter过滤低于指定阈值的事件，控制台只显示INFO及以上级别的日志 -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level><!-- 低于INFO级别的日志（DEBUG）将被拒绝，等于或者高于INFO的级别将输出到控制台 -->
+        </filter>
         <encoder>
             <!-- %37():如果字符没有37个字符长度,则左侧用空格补齐 -->
             <!-- %-37():如果字符没有37个字符长度,则右侧用空格补齐 -->
@@ -32,10 +36,15 @@
         <File>${LOG_HOME}/${APP_NAME}_info.log</File>
         <!--是否追加到文件末尾,默认为true-->
         <append>true</append>
+        <!-- 过滤掉DEBUG级别的日志，INFO_LOG只保留INFO和WARN级别 -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level><!-- 低于INFO级别的日志（DEBUG）将被拒绝，等于或者高于INFO的级别将输出到INFO_LOG -->
+        </filter>
+        <!-- 过滤掉ERROR级别的日志，ERROR日志由ERROR_LOG单独记录 -->
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
             <level>ERROR</level>
-            <onMatch>DENY</onMatch><!-- 如果命中ERROR就禁止这条日志 -->
-            <onMismatch>ACCEPT</onMismatch><!-- 如果没有命中就使用这条规则 -->
+            <onMatch>DENY</onMatch><!-- 如果命中 ERROR 就禁止这条日志 -->
+            <onMismatch>NEUTRAL</onMismatch>
         </filter>
         <!--有两个与RollingFileAppender交互的重要子组件。 第一个RollingFileAppender子组件，即RollingPolicy:负责执行翻转所需的操作。
         RollingFileAppender的第二个子组件，即TriggeringPolicy:将确定是否以及何时发生翻转。 因此，RollingPolicy负责什么和TriggeringPolicy负责什么时候.
@@ -45,12 +54,68 @@
             <!-- 文件名：panis-boot-logs/panis-boot-admin_info.2017-12-05.0.log -->
             <!-- 注意：SizeAndTimeBasedRollingPolicy中 ％i和％d令牌都是强制性的，必须存在，要不会报错 -->
             <fileNamePattern>${LOG_HOME}/${APP_NAME}_info.%d.%i.log.gz</fileNamePattern>
-            <!-- 每产生一个日志文件，该日志文件的保存期限为30天, ps:maxHistory的单位是根据fileNamePattern中的翻转策略自动推算出来的,例如上面选用了yyyy-MM-dd,则单位为天
+            <!-- 每产生一个日志文件，该日志文件的保存期限为180天, ps:maxHistory的单位是根据fileNamePattern中的翻转策略自动推算出来的,例如上面选用了yyyy-MM-dd,则单位为天
             如果上面选用了yyyy-MM,则单位为月,另外上面的单位默认为yyyy-MM-dd-->
             <maxHistory>180</maxHistory>
-            <!-- 每个日志文件到10mb的时候开始切分，最多保留30天，但最大到20GB，哪怕没到30天也要删除多余的日志 -->
+            <!-- 每个日志文件到10mb的时候开始切分，最多保留180天，但最大到20GB，哪怕没到180天也要删除多余的日志 -->
             <totalSizeCap>20GB</totalSizeCap>
             <!-- maxFileSize:这是活动文件的大小，默认值是10MB，测试时可改成5KB看效果 -->
+            <maxFileSize>10MB</maxFileSize>
+        </rollingPolicy>
+        <!--编码器-->
+        <encoder>
+            <!-- pattern节点，用来设置日志的输入格式 ps:日志文件中没有设置颜色,否则颜色部分会有ESC[0:39em等乱码-->
+            <pattern>
+                %d{yyyy-MM-dd HH:mm:ss.SSS} %-5level --- [%15.15(%thread)] %-40.40(%logger{40}) L%-4line: %msg%n
+            </pattern>
+            <!-- 记录日志的编码:此处设置字符集 - -->
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- debug 日志-->
+    <!-- RollingFileAppender：滚动记录文件，先将日志记录到指定文件，当符合某个条件时，将日志记录到其他文件 -->
+    <!-- 以下的大概意思是：1.先按日期存日志，日期变了，将前一天的日志文件名重命名为XXX%日期%索引，新的日志仍然是panis_debug.log -->
+    <!--             2.如果日期没有发生变化，但是当前日志的文件大小超过10MB时，对当前日志进行分割 重命名-->
+    <appender name="DEBUG_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!--日志文件路径和名称-->
+        <File>${LOG_HOME}/${APP_NAME}_debug.log</File>
+        <!--是否追加到文件末尾,默认为true-->
+        <append>true</append>
+        <!-- ThresholdFilter 过滤低于指定阈值的事件 -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>DEBUG</level><!-- 低于DEBUG级别的日志将被拒绝，等于或者高于DEBUG的级别将相应NEUTRAL -->
+        </filter>
+        <!-- 过滤掉INFO及以上级别的日志，只保留DEBUG级别 -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>DENY</onMatch><!-- 如果命中 INFO 及以上级别就禁止这条日志 -->
+            <onMismatch>NEUTRAL</onMismatch>
+        </filter>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>WARN</level>
+            <onMatch>DENY</onMatch>
+            <onMismatch>NEUTRAL</onMismatch>
+        </filter>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>DENY</onMatch>
+            <onMismatch>NEUTRAL</onMismatch>
+        </filter>
+        <!--有两个与RollingFileAppender交互的重要子组件。 第一个RollingFileAppender子组件，即RollingPolicy:负责执行翻转所需的操作。
+        RollingFileAppender的第二个子组件，即TriggeringPolicy:将确定是否以及何时发生翻转。 因此，RollingPolicy负责什么和TriggeringPolicy负责什么时候.
+        作为任何用途，RollingFileAppender必须同时设置RollingPolicy和TriggeringPolicy,但是，如果其RollingPolicy也实现了TriggeringPolicy接口，则只需要显式指定前者。-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- 日志文件的名字会根据fileNamePattern的值，每隔一段时间改变一次 -->
+            <!-- 文件名：panis-boot-logs/panis-boot-admin_debug.2017-12-05.0.log -->
+            <!-- 注意：SizeAndTimeBasedRollingPolicy中 ％i和％d令牌都是强制性的，必须存在，要不会报错 -->
+            <fileNamePattern>${LOG_HOME}/${APP_NAME}_debug.%d.%i.log.gz</fileNamePattern>
+            <!-- 每产生一个日志文件，该日志文件的保存期限为90天, ps:maxHistory的单位是根据fileNamePattern中的翻转策略自动推算出来的,例如上面选用了yyyy-MM-dd,则单位为天
+            如果上面选用了yyyy-MM,则单位为月,另外上面的单位默认为yyyy-MM-dd-->
+            <maxHistory>90</maxHistory>
+            <!-- 每个日志文件到10mb的时候开始切分，最多保留90天，但最大到20GB，哪怕没到90天也要删除多余的日志 -->
+            <totalSizeCap>20GB</totalSizeCap>
+            <!-- maxFileSize:这是活动文件的大小，默认值是10MB -->
             <maxFileSize>10MB</maxFileSize>
         </rollingPolicy>
         <!--编码器-->
@@ -85,10 +150,10 @@
             <!-- 文件名：panis-boot-logs/panis_error.2017-12-05.0.log -->
             <!-- 注意：SizeAndTimeBasedRollingPolicy中 ％i和％d令牌都是强制性的，必须存在，要不会报错 -->
             <fileNamePattern>${LOG_HOME}/${APP_NAME}_error.%d.%i.log.gz</fileNamePattern>
-            <!-- 每产生一个日志文件，该日志文件的保存期限为30天, ps:maxHistory的单位是根据fileNamePattern中的翻转策略自动推算出来的,例如上面选用了yyyy-MM-dd,则单位为天
+            <!-- 每产生一个日志文件，该日志文件的保存期限为180天, ps:maxHistory的单位是根据fileNamePattern中的翻转策略自动推算出来的,例如上面选用了yyyy-MM-dd,则单位为天
             如果上面选用了yyyy-MM,则单位为月,另外上面的单位默认为yyyy-MM-dd-->
             <maxHistory>180</maxHistory>
-            <!-- 每个日志文件到10mb的时候开始切分，最多保留30天，但最大到20GB，哪怕没到30天也要删除多余的日志 -->
+            <!-- 每个日志文件到10mb的时候开始切分，最多保留180天，但最大到20GB，哪怕没到180天也要删除多余的日志 -->
             <totalSizeCap>20GB</totalSizeCap>
             <!-- maxFileSize:这是活动文件的大小，默认值是10MB，测试时可改成5KB看效果 -->
             <maxFileSize>10MB</maxFileSize>
@@ -108,10 +173,12 @@
     如果另外将文件追加器添加到记录器（例如L），则对L和L'子项启用的记录请求将打印在文件和控制台上。
     通过将记录器的additivity标志设置为false，可以覆盖此默认行为，以便不再添加appender累积-->
     <!-- configuration中最多允许一个root，别的logger如果没有设置级别则从父级别root继承 -->
-    <root level="INFO">
+    <!-- root level设置为DEBUG，全局启用DEBUG日志输出 -->
+    <root level="DEBUG">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="INFO_LOG"/>
         <appender-ref ref="ERROR_LOG"/>
+        <appender-ref ref="DEBUG_LOG"/>
     </root>
 
     <!-- 指定项目中某个包，当有日志操作行为时的日志记录级别 -->
