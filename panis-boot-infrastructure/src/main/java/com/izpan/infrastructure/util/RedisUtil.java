@@ -168,7 +168,7 @@ public class RedisUtil {
     }
 
     /**
-     * 判断key是否存在
+     * 判断 key 是否存在
      *
      * @param key 键
      * @return true 存在，false 不存在
@@ -481,10 +481,10 @@ public class RedisUtil {
     // ============================ Set =============================
 
     /**
-     * 根据key获取Set中的所有值
+     * 根据 key 获取 Set 中的所有值
      *
      * @param key 键
-     * @return Set集合中的所有元素
+     * @return Set 集合中的所有元素
      */
     public static Set<Object> sGet(String key) {
         try {
@@ -512,7 +512,7 @@ public class RedisUtil {
     }
 
     /**
-     * 将数据放入set缓存
+     * 将数据放入 set 缓存
      *
      * @param key    键
      * @param values 值 可以是多个
@@ -529,7 +529,7 @@ public class RedisUtil {
     }
 
     /**
-     * 将set数据放入缓存并设置过期时间
+     * 将 set 数据放入缓存并设置过期时间
      *
      * @param key    键
      * @param time   时间(秒)
@@ -550,10 +550,10 @@ public class RedisUtil {
     }
 
     /**
-     * 获取set缓存的长度
+     * 获取 set 缓存的长度
      *
      * @param key 键
-     * @return 缓存中set的长度
+     * @return 缓存中 set 的长度
      */
     public static Long sGetSetSize(String key) {
         try {
@@ -566,7 +566,7 @@ public class RedisUtil {
     }
 
     /**
-     * 移除值为value的元素
+     * 移除值为 value 的元素
      *
      * @param key    键
      * @param values 值 可以是多个
@@ -586,12 +586,12 @@ public class RedisUtil {
     // =============================== List =================================
 
     /**
-     * 获取list缓存的内容
+     * 获取 list 缓存的内容
      *
      * @param key   缓存键
      * @param start 开始位置
      * @param end   结束位置，0 到 -1代表所有值
-     * @return List集合
+     * @return List 集合
      */
     public static List<Object> lGet(String key, long start, long end) {
         try {
@@ -603,7 +603,7 @@ public class RedisUtil {
     }
 
     /**
-     * 获取list缓存的长度
+     * 获取 list 缓存的长度
      *
      * @param key 缓存键
      * @return 缓存中元素数量
@@ -619,7 +619,7 @@ public class RedisUtil {
     }
 
     /**
-     * 通过索引获取list中的值
+     * 通过索引获取 list 中的值
      *
      * @param key   缓存键
      * @param index 索引，index>=0 时， 0 表头，1 第二个元素，依次类推；index<0 时，-1，表尾，-2 倒数第二个元素，依次类推
@@ -635,7 +635,7 @@ public class RedisUtil {
     }
 
     /**
-     * 将值插入list缓存尾部
+     * 将值插入 list 缓存尾部
      *
      * @param key   缓存键
      * @param value 值
@@ -669,7 +669,7 @@ public class RedisUtil {
     }
 
     /**
-     * 根据索引修改list中的某条数据
+     * 根据索引修改 list 中的某条数据
      *
      * @param key   缓存键
      * @param index 修改的索引
@@ -685,7 +685,7 @@ public class RedisUtil {
     }
 
     /**
-     * 移除N个值为value的元素
+     * 移除N个值为 value 的元素
      *
      * @param key   缓存键
      * @param count 移除的数量
