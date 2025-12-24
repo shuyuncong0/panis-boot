@@ -87,17 +87,17 @@ public interface ISysDataScopeService extends IService<SysDataScope> {
     /**
      * 根据权限编码查询数据权限
      *
-     * @param permissionCode 权限编码集合
+     * @param permissionResource 权限编码集合
      * @return {@link List }<{@link SysRoleDataScopeQueryBO }> 数据权限配置
      * @author payne.zhuang
      * @CreateTime 2025-05-12 - 13:58:06
      */
-    List<SysRoleDataScopeQueryBO> listByPermissionCode(String permissionCode);
+    List<SysRoleDataScopeQueryBO> listByPermissionResource(String permissionResource);
 
     /**
-     * 根据权限类型获取用户ID集合
+     * 根据权限类型获取用户 ID 集合
      *
-     * @param userId    当前用户ID
+     * @param userId    当前用户 ID
      * @param scopeType 权限类型
      * @return {@link Set}<{@link Long }> 用户ID集合
      * @author payne.zhuang
@@ -106,9 +106,9 @@ public interface ISysDataScopeService extends IService<SysDataScope> {
     Set<Long> getUserIdsByScopeType(Long userId, DataScopeTypeEnum scopeType);
 
     /**
-     * 获取本组织数据权限用户ID列表
+     * 获取本组织数据权限用户 ID 列表
      *
-     * @param userId 用户ID
+     * @param userId 用户 ID
      * @return {@link Set}<{@link Long }> 用户ID集合
      * @author payne.zhuang
      * @CreateTime 2025-05-29 16:12:41
@@ -116,9 +116,9 @@ public interface ISysDataScopeService extends IService<SysDataScope> {
     Set<Long> getUserIdsByUnitScope(Long userId);
 
     /**
-     * 获取本组织及以下数据权限用户ID列表
+     * 获取本组织及以下数据权限用户 ID 列表
      *
-     * @param userId 用户ID
+     * @param userId 用户 ID
      * @return {@link Set}<{@link Long }> 用户ID集合
      * @author payne.zhuang
      * @CreateTime 2025-05-29 16:12:55
@@ -126,9 +126,9 @@ public interface ISysDataScopeService extends IService<SysDataScope> {
     Set<Long> getUserIdsByUnitAndChildScope(Long userId);
 
     /**
-     * 获取本人及下级组织数据权限用户ID列表
+     * 获取本人及下级组织数据权限用户 ID 列表
      *
-     * @param userId 用户ID
+     * @param userId 用户 ID
      * @return {@link Set}<{@link Long }> 用户ID集合
      * @author payne.zhuang
      * @CreateTime 2025-05-29 16:13:41

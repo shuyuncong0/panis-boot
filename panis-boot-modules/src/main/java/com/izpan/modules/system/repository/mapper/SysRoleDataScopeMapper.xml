@@ -47,7 +47,7 @@
         is_deleted,
         role_id, data_scope_id
     </sql>
-    <select id="listByPermissionCode" resultType="com.izpan.modules.system.domain.bo.SysRoleDataScopeQueryBO">
+    <select id="listByPermissionResource" resultType="com.izpan.modules.system.domain.bo.SysRoleDataScopeQueryBO">
         SELECT
             srds.role_id,
             sds.id AS data_scope_id,

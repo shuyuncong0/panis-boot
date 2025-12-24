@@ -58,12 +58,12 @@ public interface ISysRoleDataScopeService extends IService<SysRoleDataScope> {
      * @author payne.zhuang
      * @CreateTime 2025-05-12 - 13:58:06
      */
-    List<SysRoleDataScopeQueryBO> listByPermissionCode(String permissionCode);
+    List<SysRoleDataScopeQueryBO> listByPermissionResource(String permissionCode);
 
     /**
-     * 根据角色ID查询已配置的数据权限ID列表
+     * 根据角色ID查询已配置的数据权限 ID 列表
      *
-     * @param roleId 角色ID
+     * @param roleId 角色 ID
      * @return {@link List }<{@link Long }> 数据权限ID列表
      * @author payne.zhuang
      * @CreateTime 2025-05-23 17:05:28
@@ -71,10 +71,10 @@ public interface ISysRoleDataScopeService extends IService<SysRoleDataScope> {
     List<Long> listDataScopeIdsByRoleId(Long roleId);
 
     /**
-     * 保存角色ID及数据权限ID集合
+     * 保存角色ID及数据权限 ID 集合
      *
-     * @param roleId       角色ID
-     * @param dataScopeIds 数据权限ID集合
+     * @param roleId       角色 ID
+     * @param dataScopeIds 数据权限 ID 集合
      * @return {@link Boolean} 保存结果
      * @author payne.zhuang
      * @CreateTime 2025-05-23 21:05:08

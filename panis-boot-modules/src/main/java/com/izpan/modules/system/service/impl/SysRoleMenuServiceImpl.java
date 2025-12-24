@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.extension.toolkit.Db;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.izpan.common.constants.SystemCacheConstant;
 import com.izpan.common.util.CglibUtil;
@@ -19,6 +18,7 @@ import com.izpan.modules.system.domain.entity.SysRoleMenu;
 import com.izpan.modules.system.repository.mapper.SysRoleMenuMapper;
 import com.izpan.modules.system.service.ISysMenuService;
 import com.izpan.modules.system.service.ISysRoleMenuService;
+import com.izpan.modules.system.service.ISysUserRoleService;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,6 +50,9 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
 
     @Resource
     private ISysMenuService sysMenuService;
+
+    @Resource
+    private ISysUserRoleService sysUserRoleService;
 
     @Override
     public IPage<SysRoleMenu> listSysRoleMenuPage(PageQuery pageQuery, SysRoleMenuBO sysRoleMenuBO) {
@@ -107,6 +110,8 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
                     sysMenuService.saveRoleMenuToCache(roleId, menuIdSet);
                 }
         );
+        // 用户路由缓存删除
+        sysUserRoleService.deleteUserRoleCacheWithRoleIds(Set.of(roleId));
         return saveBath.get();
     }
 
@@ -160,7 +165,7 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
     public void deleteRoleMenuCacheWithMenuId(Long menuId) {
         SysMenu sysMenu = sysMenuService.getById(menuId);
         // 初始化成 ID 集合，方便后续目录时方便 IN 查找
-        List<Long> menuIds = Lists.newArrayList(menuId);
+        Set<Long> menuIds = Sets.newHashSet(menuId);
         // 如果当前菜单是目录，则需要找出目录下所有菜单
         if (MenuTypeEnum.DIRECTORY.getValue().equalsIgnoreCase(sysMenu.getType())) {
             // 删除目录 ID
@@ -172,11 +177,20 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
             menuIds.addAll(sysMenus.stream().map(SysMenu::getId).toList());
         }
         if (CollectionUtils.isEmpty(menuIds)) return;
+        // 删除角色菜单缓存
+        deleteRoleMenuCacheWithMenuIds(menuIds);
+    }
+
+    @Override
+    public void deleteRoleMenuCacheWithMenuIds(Set<Long> menuIds) {
         // 找出所有关于此菜单的角色
         LambdaQueryWrapper<SysRoleMenu> inQueryWrapper = new LambdaQueryWrapper<SysRoleMenu>()
                 .in(SysRoleMenu::getMenuId, menuIds);
         List<SysRoleMenu> sysRoleMenus = baseMapper.selectList(inQueryWrapper);
-        sysRoleMenus.stream().map(SysRoleMenu::getRoleId).toList()
+        // 删除角色菜单缓存
+        sysRoleMenus.stream()
+                .map(SysRoleMenu::getRoleId)
+                .filter(roleId -> RedisUtil.exists(SystemCacheConstant.roleMenuListKey(roleId)))
                 .forEach(roleId -> RedisUtil.del(SystemCacheConstant.roleMenuListKey(roleId)));
     }
 }

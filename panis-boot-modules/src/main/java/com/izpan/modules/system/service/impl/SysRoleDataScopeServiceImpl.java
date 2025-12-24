@@ -32,8 +32,6 @@ import com.izpan.modules.system.domain.bo.SysRoleDataScopeQueryBO;
 import com.izpan.modules.system.domain.entity.SysRoleDataScope;
 import com.izpan.modules.system.repository.mapper.SysRoleDataScopeMapper;
 import com.izpan.modules.system.service.ISysRoleDataScopeService;
-import com.izpan.modules.system.util.DataScopeCacheManager;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -59,9 +57,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class SysRoleDataScopeServiceImpl extends ServiceImpl<SysRoleDataScopeMapper, SysRoleDataScope> implements ISysRoleDataScopeService {
 
-    @NonNull
-    private DataScopeCacheManager dataScopeCacheManager;
-
     @Override
     public IPage<SysRoleDataScope> listSysRoleDataScopePage(PageQuery pageQuery, SysRoleDataScopeBO sysRoleDataScopeBO) {
         LambdaQueryWrapper<SysRoleDataScope> queryWrapper = new LambdaQueryWrapper<>();
@@ -69,8 +64,8 @@ public class SysRoleDataScopeServiceImpl extends ServiceImpl<SysRoleDataScopeMap
     }
 
     @Override
-    public List<SysRoleDataScopeQueryBO> listByPermissionCode(String permissionCode) {
-        return baseMapper.listByPermissionCode(permissionCode);
+    public List<SysRoleDataScopeQueryBO> listByPermissionResource(String permissionResource) {
+        return baseMapper.listByPermissionResource(permissionResource);
     }
 
     @Override
@@ -149,12 +144,6 @@ public class SysRoleDataScopeServiceImpl extends ServiceImpl<SysRoleDataScopeMap
                     }
                 }
         );
-
-        // 使用缓存管理工具异步清理角色缓存
-        if (saveBatch.get()) {
-            // 角色数据权限配置变更，异步清理该角色关联用户的缓存
-            dataScopeCacheManager.invalidateRoleCacheAsync(this, roleId, "角色数据权限配置变更");
-        }
 
         return saveBatch.get();
     }

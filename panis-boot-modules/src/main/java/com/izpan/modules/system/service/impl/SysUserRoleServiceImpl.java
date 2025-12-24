@@ -5,14 +5,15 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.extension.toolkit.Db;
 import com.google.common.collect.Sets;
+import com.izpan.common.constants.SystemCacheConstant;
 import com.izpan.common.util.CollectionUtil;
 import com.izpan.infrastructure.page.PageQuery;
+import com.izpan.infrastructure.util.RedisUtil;
 import com.izpan.modules.system.domain.bo.SysUserRoleBO;
 import com.izpan.modules.system.domain.entity.SysUserRole;
 import com.izpan.modules.system.repository.mapper.SysUserRoleMapper;
 import com.izpan.modules.system.service.ISysRoleService;
 import com.izpan.modules.system.service.ISysUserRoleService;
-import com.izpan.modules.system.util.DataScopeCacheManager;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -36,8 +37,6 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
 
     @NonNull
     private ISysRoleService sysRoleService;
-    
-    private final DataScopeCacheManager dataScopeCacheManager;
 
     @Override
     public IPage<SysUserRole> listSysUserRolePage(PageQuery pageQuery, SysUserRoleBO sysUserRoleBO) {
@@ -83,12 +82,7 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
                     }
                 }
         );
-        
-        // 用户角色关系变更，异步清理该用户的数据权限缓存
-        if (saveResult.get()) {
-            dataScopeCacheManager.invalidateUserCacheAsync(this, userId, "用户角色关系变更");
-        }
-        
+
         return saveResult.get();
     }
 
@@ -98,14 +92,25 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
             return List.of();
         }
 
-        // 查询拥有指定角色的用户ID列表
+        // 查询拥有指定角色的用户 ID 列表
         LambdaQueryWrapper<SysUserRole> queryWrapper = new LambdaQueryWrapper<SysUserRole>()
                 .in(SysUserRole::getRoleId, roleIds)
                 .select(SysUserRole::getUserId);
 
         return baseMapper.selectList(queryWrapper).stream()
                 .map(SysUserRole::getUserId)
-                .distinct() // 去重，因为一个用户可能拥有多个指定的角色
+                // 去重，因为一个用户可能拥有多个指定的角色
+                .distinct()
                 .toList();
+    }
+
+    @Override
+    public void deleteUserRoleCacheWithRoleIds(Set<Long> roleIds) {
+        // 根据角色 Ids 找出关联用户 Ids，进行用户路由缓存删除
+        List<Long> userIds = listUserIdsByRoleIds(roleIds);
+        // 删除用户路由缓存
+        userIds.stream()
+                .filter(userId -> RedisUtil.exists(SystemCacheConstant.userRouteKey(userId)))
+                .forEach(userId -> RedisUtil.del(SystemCacheConstant.userRouteKey(userId)));
     }
 }

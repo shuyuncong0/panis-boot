@@ -8,6 +8,7 @@ import com.izpan.modules.system.domain.bo.SysRoleMenuBO;
 import com.izpan.modules.system.domain.entity.SysRoleMenu;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * 角色菜单管理 Service 服务接口层
@@ -40,10 +41,10 @@ public interface ISysRoleMenuService extends IService<SysRoleMenu> {
     boolean add(SysRoleMenuBO sysRoleMenuBO);
 
     /**
-     * 保存角色Id及菜单Id
+     * 保存角色 ID 及菜单 ID
      *
-     * @param roleId  角色Id
-     * @param menuIds 菜单Ids 集合
+     * @param roleId  角色 ID
+     * @param menuIds 菜单 Ids  集合
      * @return {@linkplain Boolean} 保存结果
      * @author payne.zhuang
      * @CreateTime 2024-04-17 11:55
@@ -51,9 +52,9 @@ public interface ISysRoleMenuService extends IService<SysRoleMenu> {
     boolean addMenuForRoleId(Long roleId, List<Long> menuIds);
 
     /**
-     * 根据角色Id获取菜单Id集合
+     * 根据角色 ID 获取菜单 ID 集合
      *
-     * @param roleId 角色Id
+     * @param roleId 角色 ID
      * @return {@linkplain List}菜单Id 集合
      * @author payne.zhuang
      * @CreateTime 2024-04-17 11:47
@@ -71,9 +72,9 @@ public interface ISysRoleMenuService extends IService<SysRoleMenu> {
     List<Long> queryRoleIdsWithMenuId(Long menuId);
 
     /**
-     * 根据角色ID查询菜单列表
+     * 根据角色 ID 查询菜单列表
      *
-     * @param roleId 角色ID
+     * @param roleId 角色 ID
      * @return {@link List} 菜单列表
      * @author payne.zhuang
      * @CreateTime 2024-04-20 20:50
@@ -81,9 +82,9 @@ public interface ISysRoleMenuService extends IService<SysRoleMenu> {
     List<SysMenuBO> queryMenuListWithRoleId(Long roleId);
 
     /**
-     * 根据角色ID列表查询角色菜单列表
+     * 根据角色 ID 列表查询角色菜单列表
      *
-     * @param roleIds 角色ID列表
+     * @param roleIds 角色 ID 列表
      * @return {@link List} 角色菜单列表
      * @author payne.zhuang
      * @CreateTime 2024-02-04 22:00
@@ -93,9 +94,18 @@ public interface ISysRoleMenuService extends IService<SysRoleMenu> {
     /**
      * 删除角色菜单缓存
      *
-     * @param menuId 菜单Id
+     * @param menuId 菜单 ID
      * @author payne.zhuang
      * @CreateTime 2024-04-20 21:55
      */
     void deleteRoleMenuCacheWithMenuId(Long menuId);
+
+    /**
+     * 删除角色菜单缓存
+     *
+     * @param menuIds 菜单 ID 集合
+     * @author payne.zhuang
+     * @CreateTime 2025-12-23 - 10:52:49
+     */
+    void deleteRoleMenuCacheWithMenuIds(Set<Long> menuIds);
 }

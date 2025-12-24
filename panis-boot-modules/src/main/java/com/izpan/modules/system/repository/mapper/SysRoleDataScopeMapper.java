@@ -39,14 +39,14 @@ import java.util.Set;
 public interface SysRoleDataScopeMapper extends BaseMapper<SysRoleDataScope> {
 
     /**
-     * 根据权限编码查询数据权限
+     * 根据权限资源标识查询数据权限
      *
-     * @param permissionCode 权限编码
+     * @param permissionResource 权限资源标识
      * @return {@link List }<{@link SysRoleDataScopeQueryBO }> 数据权限配置
      * @author payne.zhuang
      * @CreateTime 2025-05-12 - 20:37:51
      */
-    List<SysRoleDataScopeQueryBO> listByPermissionCode(String permissionCode);
+    List<SysRoleDataScopeQueryBO> listByPermissionResource(String permissionResource);
 
     /**
      * 根据角色 ID 及数据权限 ID 集合查询已软删除的数据权限关联
