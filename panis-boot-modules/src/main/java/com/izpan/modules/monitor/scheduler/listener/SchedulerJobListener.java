@@ -94,11 +94,8 @@ public class SchedulerJobListener implements JobListener {
         // 计算作业执行耗时
         build.setUseTime(System.currentTimeMillis() - startTime);
         try {
-            // 按照官方文档方法：Mock上下文，以系统用户执行
-            SaTokenContextMockUtil.setMockContext(() -> {
-                // 添加调度日志
-                monLogsSchedulerFacade.add(build);
-            });
+            // 按照官方文档方法：Mock上下文，以系统用户执行，添加调度日志
+            SaTokenContextMockUtil.setMockContext(() -> monLogsSchedulerFacade.add(build));
         } catch (Exception ex) {
             log.error("Error while adding scheduler log: {}", ex.getMessage(), ex);
         } finally {
