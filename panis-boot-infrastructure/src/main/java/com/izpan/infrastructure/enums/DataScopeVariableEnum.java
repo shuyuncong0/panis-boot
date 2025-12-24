@@ -26,7 +26,6 @@ import com.izpan.starter.database.mybatis.plus.enums.QueryConditionsEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
@@ -42,7 +41,7 @@ import java.util.Set;
 
 @Getter
 @AllArgsConstructor
-public enum DataScopeVariableEnum implements Serializable {
+public enum DataScopeVariableEnum {
 
     // 登录用户 ID，默认单值操作符
     CURRENT_USER_ID("currentUserId", "登录用户 ID", ParameterTypeEnum.SCALAR),

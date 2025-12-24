@@ -3,8 +3,6 @@ package com.izpan.infrastructure.enums;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.io.Serializable;
-
 /**
  * 菜单类型枚举类
  *
@@ -16,7 +14,7 @@ import java.io.Serializable;
 
 @Getter
 @AllArgsConstructor
-public enum MenuTypeEnum implements Serializable {
+public enum MenuTypeEnum {
 
     DIRECTORY("1", "目录"),
     MENU("2", "菜单");

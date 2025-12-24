@@ -22,8 +22,6 @@ package com.izpan.infrastructure.enums;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.io.Serializable;
-
 /**
  * 文件分类枚举
  *
@@ -34,7 +32,7 @@ import java.io.Serializable;
  */
 @Getter
 @AllArgsConstructor
-public enum FileCategoryEnum implements Serializable {
+public enum FileCategoryEnum {
 
     UPLOAD("1", "上传"),
     DOWNLOAD("2", "下载");
