@@ -42,8 +42,8 @@ public class AuthenticationController {
     }
 
     @PostMapping("/refresh_token")
-    @Operation(operationId = "2", summary = "刷新用户Token")
-    public Result<Map<String, String>> userNameLogin(@Parameter(description = "刷新TOKEN") @RequestBody RefreshTokenDTO refreshToken) {
+    @Operation(operationId = "2", summary = "刷新用户 Token")
+    public Result<Map<String, String>> userNameLogin(@Parameter(description = "刷新 Token") @RequestBody RefreshTokenDTO refreshToken) {
         return Result.data(authenticationFacade.refreshToken(refreshToken.getRefreshToken()));
     }
 
