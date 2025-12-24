@@ -37,7 +37,6 @@ import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.lang.annotation.Annotation;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -52,6 +51,7 @@ import java.util.stream.Collectors;
  */
 
 @Slf4j
+@SuppressWarnings("all")
 public class MyKnife4jOpenApiCustomizer extends Knife4jOpenApiCustomizer {
 
     private final Knife4jProperties knife4jProperties;
@@ -102,12 +102,12 @@ public class MyKnife4jOpenApiCustomizer extends Knife4jOpenApiCustomizer {
         // 扫描包下被ApiSupport注解的RestController Class
         Set<Class<?>> classes =
                 packagesToScan.stream()
-                        .map(packageToScan -> scanPackageByAnnotation(packageToScan, RestController.class))
+                        .map(this::scanPackageByAnnotation)
                         .flatMap(Set::stream)
                         .filter(clazz -> clazz.isAnnotationPresent(ApiSupport.class))
                         .collect(Collectors.toSet());
         if (!CollectionUtils.isEmpty(classes)) {
-            // ApiSupport oder值存入tagSortMap<Tag.name,ApiSupport.order>
+            // ApiSupport order 值存入 tagSortMap<Tag.name,ApiSupport.order>
             Map<String, Integer> tagOrderMap = new HashMap<>();
             classes.forEach(
                     clazz -> {
@@ -151,11 +151,10 @@ public class MyKnife4jOpenApiCustomizer extends Knife4jOpenApiCustomizer {
         return tag;
     }
 
-    private Set<Class<?>> scanPackageByAnnotation(
-            String packageName, final Class<? extends Annotation> annotationClass) {
+    private Set<Class<?>> scanPackageByAnnotation(String packageName) {
         ClassPathScanningCandidateComponentProvider scanner =
                 new ClassPathScanningCandidateComponentProvider(false);
-        scanner.addIncludeFilter(new AnnotationTypeFilter(annotationClass));
+        scanner.addIncludeFilter(new AnnotationTypeFilter(RestController.class));
         Set<Class<?>> classes = new HashSet<>();
         for (BeanDefinition beanDefinition : scanner.findCandidateComponents(packageName)) {
             try {
