@@ -27,6 +27,9 @@
         <module>panis-boot-modules</module>
         <!-- 后台管理 -->
         <module>panis-boot-admin</module>
+        
+        <!-- PanisBoot Starter 模块 -->
+        <module>panis-boot-starter</module>
     </modules>
 
 
@@ -53,6 +56,9 @@
         <classgraph.version>4.8.179</classgraph.version>
         <snakeyaml.version>2.4</snakeyaml.version>
         <minio.version>8.5.17</minio.version>
+        <fast.excel.version>1.2.0</fast.excel.version>
+        <jakarta.servlet.api.version>6.1.0</jakarta.servlet.api.version>
+        <org.jetbrains.annotations.version>26.0.2</org.jetbrains.annotations.version>
     </properties>
 
     <dependencyManagement>
@@ -141,7 +147,28 @@
                 <version>${minio.version}</version>
             </dependency>
 
-            <!-- Starter -->
+            <!-- Fast Excel -->
+            <dependency>
+                <groupId>cn.idev.excel</groupId>
+                <artifactId>fastexcel</artifactId>
+                <version>${fast.excel.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>jakarta.servlet</groupId>
+                <artifactId>jakarta.servlet-api</artifactId>
+                <version>${jakarta.servlet.api.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jetbrains</groupId>
+                <artifactId>annotations</artifactId>
+                <version>${org.jetbrains.annotations.version}</version>
+                <scope>compile</scope>
+            </dependency>
+
+            <!-- Starter Modules -->
             <dependency>
                 <groupId>com.izpan</groupId>
                 <artifactId>panis-boot-starter-common</artifactId>
@@ -169,7 +196,12 @@
             </dependency>
             <dependency>
                 <groupId>com.izpan</groupId>
-                <artifactId>panis-boot-starter-sa-token</artifactId>
+                <artifactId>panis-boot-starter-database-sharding</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.izpan</groupId>
+                <artifactId>panis-boot-starter-excel</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -179,19 +211,15 @@
             </dependency>
             <dependency>
                 <groupId>com.izpan</groupId>
-                <artifactId>panis-boot-starter-database-sharding</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.izpan</groupId>
                 <artifactId>panis-boot-starter-oss</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.izpan</groupId>
-                <artifactId>panis-boot-starter-excel</artifactId>
+                <artifactId>panis-boot-starter-sa-token</artifactId>
                 <version>${project.version}</version>
             </dependency>
+
         </dependencies>
     </dependencyManagement>
 
