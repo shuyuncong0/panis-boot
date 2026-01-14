@@ -10,7 +10,6 @@
         <version>1.0.6-SNAPSHOT</version>
     </parent>
 
-    <version>1.0.6-SNAPSHOT</version>
     <name>panis-boot-starter-sa-token</name>
     <artifactId>panis-boot-starter-sa-token</artifactId>
     <description>PanisBoot Starter - Sa Token 权限鉴权</description>

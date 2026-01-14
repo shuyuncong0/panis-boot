@@ -44,8 +44,29 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <!-- SpringBoot -->
+        <spring.boot.version>3.5.0</spring.boot.version>
 
         <!-- 其他工具版本 -->
+        <guava.version>33.4.8-jre</guava.version>
+        <gson.version>2.13.1</gson.version>
+        <logback.version>1.5.18</logback.version>
+        <common.lang3.version>3.17.0</common.lang3.version>
+        <common.codec.version>1.18.0</common.codec.version>
+        <hutool.version>5.8.38</hutool.version>
+        <freemarker.version>2.3.34</freemarker.version>
+
+        <!-- 数据库相关版本 -->
+        <mysql.version>8.4.0</mysql.version>
+        <mybatis.version>3.0.4</mybatis.version>
+        <druid.version>1.2.25</druid.version>
+        <mybatis.plus.version>3.5.8</mybatis.plus.version>
+        <mybatis.plus.generator.version>3.5.8</mybatis.plus.generator.version>
+        <mybatis.dynamic.datasource.version>4.3.1</mybatis.dynamic.datasource.version>
+        <commons.pool2.version>2.12.1</commons.pool2.version>
+        <sharding.version>5.2.1</sharding.version>
+
+        <!-- 安全和工具 -->
+        <sa-token.version>1.43.0</sa-token.version>
         <lombok.version>1.18.38</lombok.version>
         <knife4j.version>4.5.0</knife4j.version>
         <springdoc.version>2.8.9</springdoc.version>

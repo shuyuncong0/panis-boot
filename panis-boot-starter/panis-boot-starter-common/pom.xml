@@ -9,7 +9,6 @@
         <version>1.0.6-SNAPSHOT</version>
     </parent>
 
-    <version>1.0.6-SNAPSHOT</version>
     <name>panis-boot-starter-common</name>
     <artifactId>panis-boot-starter-common</artifactId>
     <description>PanisBoot Starter - Common 基础模块</description>
